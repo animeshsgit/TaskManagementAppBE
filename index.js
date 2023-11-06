@@ -1,5 +1,9 @@
 const express = require("express");
 const cors = require("cors");
+require('dotenv').config()
+require('./database/db');
+const authRoutes = require('./routes/authRoutes');
+const taskRouter = require('./routes/taskRoutes');
 
 const app = express();
 
@@ -15,21 +19,13 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-// database
-const db = require("./app/models");
-const Role = db.role;
-
-db.sequelize.sync();
-
-
 // simple route
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to my application." });
 });
 
-// routes
-require('./app/routes/auth.routes')(app);
-require('./app/routes/user.routes')(app);
+app.use('/auth', authRoutes);
+app.use('/task', taskRouter);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
